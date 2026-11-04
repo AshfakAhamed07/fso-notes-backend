@@ -5,7 +5,15 @@ const cors = require('cors')
 const app = express()
 
 app.use(express.json())
-app.use(cors())
+
+const allowedOrigins = [
+  'http://localhost:5173',
+  // Add your deployed frontend URL here later
+]
+
+app.use(cors({
+  origin: allowedOrigins,
+}))
 
 let notes = [
   {
