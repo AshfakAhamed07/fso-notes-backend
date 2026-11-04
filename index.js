@@ -1,80 +1,51 @@
+
 const express = require('express')
 const cors = require('cors')
+
 const app = express()
 
 app.use(express.json())
 app.use(cors())
 
 let notes = [
-   {
-    id: "1",
-    content: "HTML is easy",
-    important: true
+  {
+    id: '1',
+    content: 'HTML is easy',
+    important: true,
   },
   {
-    id: "2",
-    content: "Browser can execute only JavaScript",
-    important: false
+    id: '2',
+    content: 'Browser can execute only JavaScript',
+    important: false,
   },
   {
-    id: "3",
-    content: "GET and POST are the most important methods of HTTP protocol",
-    important: true
-  }
+    id: '3',
+    content: 'GET and POST are the most important methods of HTTP protocol',
+    important: true,
+  },
 ]
 
-
-// app.get('/', (request, response) => {
-//   response.send('<h1>Hello World!</h1>')
-// })
-
+// GET all notes
 app.get('/api/notes', (request, response) => {
   response.json(notes)
 })
 
-// GET THE NOTES WHICH MATCHES WITH THE ID AND RESPOND WITH A 404 IF IT DOESN'T MATCH
-
-// app.get('/api/notes/:id', (request, response) => {
-//   const id = request.params.id
-//   const note = notes.find(note => note.id === id)
-  
-//   if (note) {
-//     response.json(note)
-//   } else {
-//     response.status(404).end()
-//   }
-// })
-
-// DELETE THE NOTE WHICH MATCHES THE ID AND SEND A 204 WHETHER IT DELETES OR NOT
-
-// app.delete('/api/notes/:id', (request, response) => {
-//   const id = request.params.id
-//   notes = notes.filter(note => note.id !== id)
-
-//   response.status(204).end()
-// })
-
-
-// ADDING A NEW NOTE USING THE POST METHOD
-// app.post('/api/notes', (request, response) => {
-//   const note = request.body
-//   console.log(note)
-//   response.json(note)
-// })
-
+// Generate a unique ID
 const generateId = () => {
   const maxId = notes.length > 0
     ? Math.max(...notes.map(n => Number(n.id)))
     : 0
+
   return String(maxId + 1)
 }
 
+// Create a new note
 app.post('/api/notes', (request, response) => {
   const body = request.body
 
   if (!body.content) {
-    return response.status(400).json({ 
-      error: 'content missing' 
+    return response.status(400).json({
+      error: 'content missing',
     })
   }
 
@@ -89,9 +60,32 @@ app.post('/api/notes', (request, response) => {
   response.json(note)
 })
 
+// Update an existing note
+app.put('/api/notes/:id', (request, response) => {
+  const id = request.params.id
+  const body = request.body
 
+  const note = notes.find(note => note.id === id)
+
+  if (!note) {
+    return response.status(404).end()
+  }
+
+  const updatedNote = {
+    ...note,
+    important: body.important,
+  }
+
+  notes = notes.map(note =>
+    note.id === id ? updatedNote : note
+  )
+
+  response.json(updatedNote)
+})
+
+// Start the server
 const PORT = process.env.PORT || 3001
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
-
