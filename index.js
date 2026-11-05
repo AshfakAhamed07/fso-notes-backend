@@ -8,7 +8,7 @@ app.use(express.json())
 
 const allowedOrigins = [
   'http://localhost:5173',
-  // Add your deployed frontend URL here later
+  'https://harmonious-syrniki-cef7f1.netlify.app',
 ]
 
 app.use(cors({
